@@ -1,21 +1,7 @@
 .SUFFIXES:      .c .o .s
 
-#x86-Linux with gcc
 CC = gcc
-OPTIONS = -O3  -march=i686 -static -W -Wall -fomit-frame-pointer
-
-#x86-Linux with Portland Group Compiler
-#CC = pgcc
-#OPTIONS = -O3 -mpentiumpro
-
-#SGI Irix CC, SUN Solaris CC
-#CC = CC
-#OPTIONS = -64 -O3
-
-#Alpha TRUE64 Unix CC
-#CC = CC
-#OPTIONS = -O4 -non_shared -arch=ev67
-#OPTIONSLD = -O4 -non_shared
+OPTIONS = -O3 -static -W -Wall -Wno-unused-parameter -fomit-frame-pointer -march=armv7-a
 
 PROGNAME = memperf
 OBJECTS = lcpy.o cpy.o par.o
@@ -24,17 +10,12 @@ LIBRARIES = -lm
 
 all:		$(PROGNAME)
 
-pentium:	DEFINES = -DPENTIUMCOUNTER -DHWCOUNTER
-pentium:	$(PROGNAME)
+armv7a:		DEFINES = -DARMV7ACOUNTER -DHWCOUNTER
+armv7a:		$(PROGNAME)
 
-pentiumopt:	DEFINES = -DPENTIUMCOUNTER -DHWCOUNTER -DHAVEOPT
-pentiumopt:	OBJECTS = $(OBJECTS) cpy_p3opt.o
-pentiumopt:	cpy_p3opt.o $(PROGNAME)
-
-
-alpha:		DEFINES = -DALPHACOUNTER -DHWCOUNTER
-alpha:		OBJECTS = $(OBJECTS) rtclock.o
-alpha:		rtclock.o $(PROGNAME)
+armv7aopt:	DEFINES = -DARMV7ACOUNTER -DHWCOUNTER -DHAVEOPT
+armv7aopt:	OBJECTS += cpy_p3opt.o
+armv7aopt:	cpy_p3opt.o $(PROGNAME)
 
 shmem:		PROGNAME = $(PROGNAME)_shared
 shmem:		DEFINES = -DSHAREDMEM
@@ -44,7 +25,7 @@ $(PROGNAME):	$(OBJECTS)
 	$(CC) $(OPTIONS) -o $(PROGNAME) $(OBJECTS) $(LIBRARIES)
 
 lcpy.o:	lcpy.c  cpy.h par.h
-	$(CC) $(OPTIONS) $(DEFINES) -c lcpy.c
+	$(CC) $(OPTIONS) $(DEFINES) -c lcpy.c -o lcpy.o
 
 cpy.o:	cpy.h gettime.h gettimealpha.h p5tsc.h
 	$(CC) $(OPTIONS) $(DEFINES) -c cpy.c -o cpy.o
@@ -53,22 +34,10 @@ cpy_p3opt.o: cpy_p3opt.c
 	$(CC) $(OPTIONS) $(DEFINES) -c cpy_p3opt.c -o cpy_p3opt.o
 
 par.o:	par.c
-#	$(CC) $(OPTIONS) -c -DBINDTOCPU par.c
-	$(CC) $(OPTIONS) -c par.c
-
-rtclock.o:	rtclock.s
-	touch rtclock.o #	$(CC) -O 2 -c rtclock.s -o rtclock.o
-
-assembly:	lcpy.c par.h p5tsc.h gettime.h
-	$(CC) $(OPTIONS) -S lcpy.c
-
-exec:	lcpy.s par.o
-	$(CC) $(OPTIONS) -o $(PROGNAME) lcpy.s par.o
+	$(CC) $(OPTIONS) -c par.c -o par.o
 
 clean:
 	rm -f *~ *.o
 
 cleanall:
 	rm -f *~ *.o $(PROGNAME) $(PROGNAME)_shared lcpy.s cpy.s
-
-
