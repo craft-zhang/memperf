@@ -1,7 +1,7 @@
 .SUFFIXES:      .c .o .s
 
 CC = gcc
-OPTIONS = -O3 -static -W -Wall -Wno-unused-parameter -fomit-frame-pointer -march=armv7-a
+OPTIONS = -O3 -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -march=armv7-a
 
 PROGNAME = memperf
 OBJECTS = lcpy.o cpy.o par.o
