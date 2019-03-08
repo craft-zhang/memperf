@@ -1,25 +1,17 @@
 #include "cpy_opt.h"
 
-#ifdef WIN32
-#include <stdlib.h>
-#include <windows.h>
-#include "gettiment.h"
-#define gettime getcounter
+#include <sys/types.h>
 
-#else
-#ifdef PENTIUMCOUNTER
-#include "p5tsc.h"
-#define gettime rdtsc
-#else
-#ifdef ALPHACOUNTER
-#include "gettimealpha.h"
-#define gettime getclock
+#ifdef __linux__
+#ifdef DARMV7ACOUNTER
+#include "gettimearmv7a.h"
 #else
 #include "gettime.h"
 #define gettime gettimeus
-#endif /* ALPHACOUNTER */
-#endif /* PENTIUMCOUNTER */
-#endif /* WIN32 */
+#endif // DARMV7ACOUNTER
+#else
+#error "do not support this march"
+#endif // __linux__
 
 double u;
 
