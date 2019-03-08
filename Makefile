@@ -27,7 +27,7 @@ $(PROGNAME):	$(OBJECTS)
 lcpy.o:	lcpy.c  cpy.h par.h
 	$(CC) $(OPTIONS) $(DEFINES) -c lcpy.c -o lcpy.o
 
-cpy.o:	cpy.h gettime.h gettimealpha.h p5tsc.h
+cpy.o:	cpy.h gettime.h gettimearmv7a.h
 	$(CC) $(OPTIONS) $(DEFINES) -c cpy.c -o cpy.o
 
 cpy_p3opt.o: cpy_p3opt.c
