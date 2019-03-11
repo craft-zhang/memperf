@@ -535,7 +535,7 @@ void analyze_rep(paramT *p) {
       }
       devmean += stddev;
       corrdevmean += corrstddev;
-      fprintf(stream,"%8.2f",bwmax);
+      fprintf(stream,"%8.8f ",bwmax);
       if (chartrev) i--;
       else i++;
     }
