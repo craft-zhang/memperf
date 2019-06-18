@@ -38,7 +38,7 @@
 /* strides (-1=last entry) */
 int strdr[]={1,2,3,4,5,6,7,8,12,15,16,24,31,32,48,63,64,96,127,128,192,-1};
 
-#define MXBLSZ   24          /* 2^x max block size (* 8 bytes) */
+#define MXBLSZ   24          /* 2^x max block size (* 8 bytes(double)) */
 #define MXSTRDS  22          /* max/default number of stride tests for each size */
 #define MXRUNSZ  20          /* 2^x default block size (* 8 bytes) */
 #define MINRUNSZ 6           /* 2^x min block size (* 8 bytes) */
