@@ -1,8 +1,7 @@
 .SUFFIXES:      .c .o .s
 
 CC = gcc
-OPTIONS = -O3 -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -march=armv7-a
-
+OPTIONS = -O3 -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -marm -mfpu=neon
 PROGNAME = memperf
 OBJECTS = lcpy.o cpy.o par.o
 
@@ -31,13 +30,11 @@ cpy.o:	cpy.h gettime.h gettimearmv7a.h
 	$(CC) $(OPTIONS) $(DEFINES) -c cpy.c -o cpy.o
 
 cpy_p3opt.o: cpy_p3opt.c
-	$(CC) $(OPTIONS) $(DEFINES) -c cpy_p3opt.c -o cpy_p3opt.o
+	$(CC) $(OPTIONS) $(DEFINES) -S cpy_p3opt.c -o cpy_p3opt.s
+	$(CC) $(OPTIONS) $(DEFINES) -c cpy_p3opt.s -o cpy_p3opt.o
 
 par.o:	par.c
 	$(CC) $(OPTIONS) -c par.c -o par.o
 
 clean:
-	rm -f *~ *.o
-
-cleanall:
-	rm -f *~ *.o $(PROGNAME) $(PROGNAME)_shared lcpy.s cpy.s
+	rm -f *~ *.o $(PROGNAME) $(PROGNAME)_shared *.s
