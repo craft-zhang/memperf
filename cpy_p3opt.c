@@ -1,7 +1,5 @@
 #include "cpy_opt.h"
 
-#include <sys/types.h>
-
 #ifdef __linux__
 #ifdef DARMV7ACOUNTER
 #include "gettimearmv7a.h"
@@ -19,7 +17,7 @@ double u;
 /* for understanding how the compiler works, to check the assembly code gcc generated */
 int cpy_lsopt(double *ptr, int stride, int block_size, int it)
 {
-  szie_t n;
+  register size_t n asm("r4");
   n = block_size / stride;
   stride *= sizeof(double);
 
@@ -27,29 +25,28 @@ int cpy_lsopt(double *ptr, int stride, int block_size, int it)
   gettime(&hi0, &lo0);
 
   {
-    size_t i, j;
+    int i, j;
     for (i = 0; i < it; i++) {
       for (j = 0; j < stride; j++) {
         /* that addition doesn't make much sense, but we don't care about the result... */
-        __asm__ __volatile__("
-          ldr r0, %1
-          vsub.i32 d4, d4, d4
-          ldr r1, %2
-          vsub.i32 d5, d5, d5
-          vsub.i32 d6, d6, d6
-          vsub.i32 d7, d7, d7
-
-          vld1.32 {d0}, [r0], r1
-          vadd.i32 d4, d4, d0
-          vld1.32 {d1}, [r0], r1
-          vadd.i32 d5, d5, d1
-          vld1.32 {d2}, [r0], r1
-          vadd.i32 d6, d6, d2
-          vld1.32 {d3}, [r0], r1
-          vadd.i32 d7, d7, d3"
+        __asm__ __volatile__(
+	  "asrs    %3, r5, #3 \n"
+"ls_loop_8: \n\t"
+	  "cmp r5, #1 \n\t"
+          "blt ls_loop_end\n\t" 
+          "vld1.32 {d0}, [%1], %2 \n\t"
+          "vld1.32 {d1}, [%1], %2 \n\t"
+          "vld1.32 {d2}, [%1], %2 \n\t"
+          "vld1.32 {d3}, [%1], %2 \n\t"
+	  "sub r5, r5, #1 \n\t"
+          "vld1.32 {d4}, [%1], %2 \n\t"
+          "vld1.32 {d5}, [%1], %2 \n\t"
+          "vld1.32 {d6}, [%1], %2 \n\t"
+          "vld1.32 {d7}, [%1], %2 \n\t"
+"ls_loop_end: \n\t"
         :
-        : "r" (ax), "r" (bx), "r" (cx), "f" (u0), "f" (u1)
-        : "st", "st(1)", "st(2)", "st(3)", "st(4)"
+	:"r"(ptr), "r"(stride), "r"(n)
+        :"cc"
         );
         ptr++;
       }
