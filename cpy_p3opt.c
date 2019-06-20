@@ -20,7 +20,7 @@
 /* load test (with neon summing to be somewhat fair against unoptimized version */
 int cpy_lsopt(double *ptr, int stride, int block_size, int it)
 {
-  //printf("%p %d %d %d\n", ptr, stride, block_size, it);
+  // printf("%p %d %d %d\n", ptr, stride, block_size, it);
   register double *entry asm("r4");
   register size_t n asm("r5");
   n = block_size / stride;
@@ -35,7 +35,7 @@ int cpy_lsopt(double *ptr, int stride, int block_size, int it)
     for (i = 0; i < it; i++) {
       for (j = 0; j < stride; j++) {
         entry = ptr + j;
-  	//printf("%p %d %d %d %d\n", entry, stride_r, n, i, j);
+        // printf("%p %d %d %d %d\n", entry, stride_r, n, i, j);
         /* that addition doesn't make much sense, but we don't care about the result... */
         __asm__ __volatile__(
           "vsub.i64 d8, d8, d8 \n\t"
