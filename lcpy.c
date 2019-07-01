@@ -45,7 +45,7 @@ int strdr[]={1,2,3,4,5,6,7,8,12,15,16,24,31,32,48,63,64,96,127,128,192,-1};
 #define MXIT     16          /* number of iterations (default) */
 #define NPES     1           /* number of processes (default) */
 #define MXPROC   16          /* max number of parallel processes */
-#define OPTASM   0           /* don't use special instructions per default */
+#define OPTASM   1           /* use special instructions per default */
 #define MXREP    7           /* number of repetitions allowed */
 #define NROFREP  3           /* default number of repetitions */
 
@@ -134,7 +134,7 @@ DWORD WINAPI memop(paramT *p)
 
   /* initialize memory segment */
   for (i=0; i<p->mxsize; i++) {
-    a[i]=1.0; c[i]=1.0;
+    ((float *)a)[i * 2] = 1.f; ((float *)c)[i * 2] = 1.f;
   }
 
   /* stride loop */
@@ -568,13 +568,13 @@ int __cdecl main(int argc,char *argv[]) {
   /* default initialisation */
   paramT *p = NULL;
   p = (paramT*) malloc(MXPROC*sizeof(paramT));
-  p[0].mode = 0;
-  p[0].npes = NPES;
-  p[0].mxsize = MXRUNSZ;
-  p[0].minsize = MINRUNSZ;
-  p[0].mxstrds = MXSTRDS;
-  p[0].mxiters = MXIT;
-  p[0].currentrep = 1;
+  p[0].mode = 0; // load sum
+  p[0].npes = NPES; // number of process
+  p[0].mxsize = MXRUNSZ; // max size
+  p[0].minsize = MINRUNSZ; // min size
+  p[0].mxstrds = MXSTRDS; // max number of stride
+  p[0].mxiters = MXIT; // max iter
+  p[0].currentrep = 1; // repeat
 #ifdef HAVEOPT
   p[0].useoptasm = OPTASM;
 #else

@@ -1,16 +1,15 @@
 #include "cpy.h"
-
 #include <sys/types.h>
-
 #ifdef __linux__
 #ifdef DARMV7ACOUNTER
 #include "gettimearmv7a.h"
+#define gettime getclock
 #else
 #include "gettime.h"
 #define gettime gettimeus
 #endif // DARMV7ACOUNTER
 #else
-#error "do not support this march"
+#error "do not support this arch"
 #endif // __linux__
 
 double u;

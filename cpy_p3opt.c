@@ -21,11 +21,16 @@
 int cpy_lsopt(double *ptr, int stride, int block_size, int it)
 {
   // printf("%p %d %d %d\n", ptr, stride, block_size, it);
-  register double *entry asm("r4");
-  register size_t n asm("r5");
-  n = block_size / stride;
-  register size_t stride_r asm("r6");
+  register double *entry asm("r6");
+
+  register size_t stride_r asm("r7");
   stride_r = stride * sizeof(double);
+
+  register size_t n asm("r8");
+  n = block_size / stride;
+
+  register long long sum asm("r10");
+  sum = 0;
 
   uint32 hi0, lo0, hi1, lo1;
   gettime(&hi0, &lo0);
@@ -42,32 +47,37 @@ int cpy_lsopt(double *ptr, int stride, int block_size, int it)
           "vsub.i64 d9, d9, d9 \n\t"
           "vsub.i64 d10, d10, d10 \n\t"
           "vsub.i64 d11, d11, d12 \n\t"
-          "asrs r7, %2, #3 \n"
+          "asrs r9, %3, #3 \n"
 "ls_loop_8: \n\t"
-          "vld1.32 {d0}, [%0], %1 \n\t"
+          "vld1.32 {d0}, [%1], %2 \n\t"
           "vadd.i64 d8, d8, d0 \n\t"
-          "vld1.32 {d1}, [%0], %1 \n\t"
+          "vld1.32 {d1}, [%1], %2 \n\t"
           "vadd.i64 d9, d9, d1 \n\t"
-          "vld1.32 {d2}, [%0], %1 \n\t"
+          "vld1.32 {d2}, [%1], %2 \n\t"
           "vadd.i64 d10, d10, d2 \n\t"
-          "vld1.32 {d3}, [%0], %1 \n\t"
+          "vld1.32 {d3}, [%1], %2 \n\t"
           "vadd.i64 d11, d11, d3 \n\t"
-          "sub r7, r7, #1 \n\t"
-          "vld1.32 {d4}, [%0], %1 \n\t"
+          "sub r9, r9, #1 \n\t"
+          "vld1.32 {d4}, [%1], %2 \n\t"
           "vadd.i64 d8, d8, d4 \n\t"
-          "vld1.32 {d5}, [%0], %1 \n\t"
+          "vld1.32 {d5}, [%1], %2 \n\t"
           "vadd.i64 d9, d9, d5 \n\t"
-          "vld1.32 {d6}, [%0], %1 \n\t"
+          "vld1.32 {d6}, [%1], %2 \n\t"
           "vadd.i64 d10, d10, d6 \n\t"
-          "vld1.32 {d7}, [%0], %1 \n\t"
+          "vld1.32 {d7}, [%1], %2 \n\t"
           "vadd.i64 d11, d11, d7 \n\t"
-          "cmp r7, #1 \n\t"
+          "cmp r9, #1 \n\t"
           "bge ls_loop_8 \n\t"
-        :
-        :"r"(entry), "r"(stride_r), "r"(n)
-        :"cc", "r7", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
+          "vadd.i64 d9, d9, d8 \n\t"
+          "vadd.i64 d11, d11, d10 \n\t"
+          "vadd.i64 d11, d11, d9 \n\t"
+          "vmov r9, %0, d11 \n\t"
+        : "=r"(sum)
+        : "r"(entry), "r"(stride_r), "r"(n)
+        : "cc", "r9", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
         );
       }
+      printf("%d, %lld\n", block_size, sum);
     }
   }
 

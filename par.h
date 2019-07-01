@@ -7,5 +7,3 @@ extern int sem_init();
 extern int sem_deinit();
 extern int begin_parallel(int n); 
 extern int end_parallel();
-
-
