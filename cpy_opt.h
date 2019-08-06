@@ -2,7 +2,7 @@
 #define CPY_OPT_H
 
 /* load test (with summing to be fair against non_optimized code */
-int cpy_lsopt(double* a,int l,int mx,int it);
+float cpy_lsopt(double* a,int l,int mx,int it);
 
 /* const store test */
 int cpy_vsopt(double* a,int l,int mx,int it);

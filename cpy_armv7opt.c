@@ -18,7 +18,7 @@
 /* for understanding how the CPU works, to observe the behavior of the CPU                     */
 
 /* load test (with neon summing to be somewhat fair against unoptimized version */
-int cpy_lsopt(double *ptr, int stride, int block_size, int it)
+float cpy_lsopt(double *ptr, int stride, int block_size, int it)
 {
   // printf("%p %d %d %d\n", ptr, stride, block_size, it);
   register double *entry asm("r6");
@@ -77,7 +77,7 @@ int cpy_lsopt(double *ptr, int stride, int block_size, int it)
         : "cc", "r9", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
         );
       }
-      printf("%d, %lld\n", block_size, sum);
+      //printf("%d, %lld\n", block_size, sum);
     }
   }
 
