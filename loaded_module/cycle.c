@@ -79,7 +79,7 @@ void entry(size_t n) {
     sum = loop(a, b, len);
     time_end   = rdtsc32();
     PROFILE_POINT("systime")
-    printf("%d: done. sum = %d; time delta = %u; cycle/s = %llu\n", len, sum, time_end - time_start, (time_end - time_start) / (te - ts) * 1000000);
+    printf("%d: done. sum = %d; time delta = %u; cycle/us = %f\n", len, sum, time_end - time_start, (double)(time_end - time_start) / (double)(te - ts));
 
     free(a); free(b);
     return;
@@ -90,7 +90,7 @@ int main() {
     pid = syscall(SYS_gettid);
     cpu_set_t set;
     CPU_ZERO(&set);
-    CPU_SET(0, &set);
+    CPU_SET(4, &set);
     int syscallret = syscall(__NR_sched_setaffinity, pid, sizeof(set), &set);
     if (syscallret) {
         fprintf(stderr, "syscall error %d\n", syscallret);
