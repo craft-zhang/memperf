@@ -2,6 +2,7 @@
     time measuring with armv7a pmu
     armv7a cycle clock counter
     need insert pmu_enable loaded kernel module first
+    normal resolution 1 usec
  */
 
 #include <sys/types.h>
@@ -28,14 +29,14 @@ extern inline void getclock(uint32 *hi, uint32 *lo)
 }
 
 /* 64 bit subtract t1-t0 */
-extern inline int subtract64(uint32 hi0, uint32 lo0, uint32 hi1, uint32 lo1 )
+extern inline float subtract64(uint32 hi0, uint32 lo0, uint32 hi1, uint32 lo1 )
 {
-  uint32 hir, lor;
+  float lor, hir;
   hir = (hi1 - hi0);
   if (lo0 < lo1) {
     lor = (lo1 - lo0);
   } else {
-    lor = 0xFFFFFFFF - (lo0 - lo1);
+    lor = ((float)(0xFFFFFFFF - (lo0 - lo1))) / 2000.f ;
   }
   return lor;
 }
