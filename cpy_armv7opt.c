@@ -32,11 +32,12 @@ float cpy_lsopt(double *ptr, int stride, int block_size, int it)
   register long long sum asm("r10");
   sum = 0;
 
+  int i, j;
+
   uint32 hi0, lo0, hi1, lo1;
   gettime(&hi0, &lo0);
 
   {
-    int i, j;
     for (i = 0; i < it; i++) {
       for (j = 0; j < stride; j++) {
         entry = ptr + j;
@@ -77,7 +78,7 @@ float cpy_lsopt(double *ptr, int stride, int block_size, int it)
         : "cc", "r9", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
         );
       }
-      //printf("%d, %lld\n", block_size, sum);
+      printf("%d, %lld\n", block_size, sum);
     }
   }
 

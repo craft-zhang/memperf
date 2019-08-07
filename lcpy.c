@@ -50,7 +50,7 @@ int strdr[]={1,2,3,4,5,6,7,8,12,15,16,24,31,32,48,63,64,96,127,128,192,-1};
 #define NROFREP  3           /* default number of repetitions */
 
 #define OUTLIERLIMIT 0.75    /* limit for delaring a result as outlier */
-#define KORR     4           /* usec for correction of timer (0 iterations) */
+#define KORR     0           /* usec for correction of timer (0 iterations) */
 #define TIC      1.0         /* default clock resolution, ticks per us */
 
 /*#define SHAREDMEM             use same shared block of memory for each proc */
@@ -65,7 +65,7 @@ int strdr[]={1,2,3,4,5,6,7,8,12,15,16,24,31,32,48,63,64,96,127,128,192,-1};
 #define CHARTOUT if (CHART)
 #define DEBUGPRINT if (DEBUGP)
 
-int chartrev;
+int chartrev; // chart reverse
 double tic;
 double *shared;
 int nrofrep = NROFREP;
@@ -97,8 +97,10 @@ int cpy_csopt(double* a,double* c,int l,int mx,int it) { return (int) (*a+l+mx+i
 
 DWORD WINAPI memop(paramT *p)
 {
-  double *a,*c;
-  int i,j,l,t,t1,t2,t4,t8,topt,li,nel,mx,effiters;
+  double *a,*c; // buffer
+  int i,j,l;
+  float t,t1,t2,t4,t8,topt;
+  int li,nel,mx,effiters;
 
   double bandwith[MXBLSZ][MXSTRDS];
   char name[80], namebwf[80], number[10];
@@ -134,7 +136,11 @@ DWORD WINAPI memop(paramT *p)
 
   /* initialize memory segment */
   for (i=0; i<p->mxsize; i++) {
-    ((float *)a)[i * 2] = 1.f; ((float *)c)[i * 2] = 1.f;
+    // for longlong type accumulate
+    ((long long *)a)[i] = 1;
+    ((long long *)c)[i] = 1;
+    //((float *)a)[i * 2] = 1.f; ((float *)a)[i * 2 + 1] = 1.f;
+    //((float *)c)[i * 2] = 1.f; ((float *)c)[i * 2 + 1] = 1.f;
   }
 
   /* stride loop */
@@ -189,9 +195,12 @@ DWORD WINAPI memop(paramT *p)
       }
 
       /* warm up memory */
+      // TODO: store test
+      double sum = 0;
       for (i=0; i<mx; i++) {
-        a[i] += 1.0; c[i] += 1.0;
+        sum += a[i];// c[i] += 1.0;
       }
+      printf("warm up memory sum = %lld\n", sum);
 
       barrier();
 
@@ -260,15 +269,15 @@ DWORD WINAPI memop(paramT *p)
       }
 
       t+=t1;
-      nel= 8 * l * (mx/l) * effiters;
+      nel = 8 * l * (mx/l) * effiters;
 
       DEBUGOUT {
         if (p->par_cid==0)
           fprintf( stream, "p%3d %6d %6d %16d %16d %16d %8.2f\n",
-          p->npes,l,effiters,mx*8,nel,t,(float) nel/(t/tic));
+          p->npes,l,effiters,mx*8,nel,t,(float)nel / 1024 / (t / tic)); // KB / us
       }
 
-      bandwith[x][y] = (float) nel/(t/tic);
+      bandwith[x][y] = (float) nel/1024./(t/tic); // KB / us TODO:
     }
   }
 
@@ -556,7 +565,7 @@ void analyze_rep(paramT *p) {
 
 int __cdecl main(int argc,char *argv[]) {
   chartrev = CHARTREV;
-  tic = 0;
+  tic = TIC;
   int i, arg, currit, modes, modenr;
   arg = 1;
   modes = 0;
@@ -643,8 +652,7 @@ int __cdecl main(int argc,char *argv[]) {
         arg++; nrofrep = atoi(argv[arg]);
       }
       if (argv[arg][1] == 't' && (arg+1)<argc) {
-        arg++;
-        tic=atof(argv[arg]);
+        arg++; tic = atof(argv[arg]);
       }
     }
     arg++;
