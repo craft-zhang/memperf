@@ -1,8 +1,8 @@
 .SUFFIXES:      .c .o .s
 
 CC = gcc
-#OPTIONS  = -Og -g -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -marm -mfpu=neon
-OPTIONS  = -O3 -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -marm -mfpu=neon -DBINDTOCPU 
+OPTIONS  = -Og -g -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -fomit-frame-pointer -marm -mfpu=neon
+OPTIONS  = -O3 -static -W -Wall -Wno-unused-parameter -Wno-unused-but-set-variable -marm -mfpu=neon -DBINDTOCPU 
 PROGNAME = memperf
 OBJECTS  = lcpy.o cpy.o par.o
 

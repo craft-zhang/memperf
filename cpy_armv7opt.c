@@ -29,7 +29,7 @@ float cpy_lsopt(double *ptr, int stride, int block_size, int it)
   register size_t n asm("r8");
   n = block_size / stride;
 
-  register long long sum asm("r10");
+  register long int sum asm("r9");
   sum = 0;
 
   int i, j;
@@ -47,7 +47,7 @@ float cpy_lsopt(double *ptr, int stride, int block_size, int it)
           "vsub.i64 d8, d8, d8 \n\t"
           "vsub.i64 d9, d9, d9 \n\t"
           "vsub.i64 d10, d10, d10 \n\t"
-          "vsub.i64 d11, d11, d12 \n\t"
+          "vsub.i64 d11, d11, d11 \n\t"
           "asrs r9, %3, #3 \n"
 "ls_loop_8: \n\t"
           "vld1.32 {d0}, [%1], %2 \n\t"
@@ -72,13 +72,13 @@ float cpy_lsopt(double *ptr, int stride, int block_size, int it)
           "vadd.i64 d9, d9, d8 \n\t"
           "vadd.i64 d11, d11, d10 \n\t"
           "vadd.i64 d11, d11, d9 \n\t"
-          "vmov r9, %0, d11 \n\t"
+          "vmov %0, r10, d11 \n\t"
         : "=r"(sum)
         : "r"(entry), "r"(stride_r), "r"(n)
-        : "cc", "r9", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
+        : "cc", "r10", "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11"
         );
       }
-      printf("%d, %lld\n", block_size, sum);
+      //printf("%d, %ld\n", n, sum);
     }
   }
 

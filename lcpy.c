@@ -137,8 +137,8 @@ DWORD WINAPI memop(paramT *p)
   /* initialize memory segment */
   for (i=0; i<p->mxsize; i++) {
     // for longlong type accumulate
-    ((long long *)a)[i] = 1;
-    ((long long *)c)[i] = 1;
+    ((long long int*)a)[i] = 1;
+    ((long long int*)c)[i] = 1;
     //((float *)a)[i * 2] = 1.f; ((float *)a)[i * 2 + 1] = 1.f;
     //((float *)c)[i * 2] = 1.f; ((float *)c)[i * 2 + 1] = 1.f;
   }
@@ -196,11 +196,11 @@ DWORD WINAPI memop(paramT *p)
 
       /* warm up memory */
       // TODO: store test
-      double sum = 0;
+      long long int sum = 0;
       for (i=0; i<mx; i++) {
-        sum += a[i];// c[i] += 1.0;
+        sum += ((long long int *)a)[i];// c[i] += 1.0;
       }
-      printf("warm up memory sum = %lld\n", sum);
+      //printf("warm up memory sum = %lld\n", sum);
 
       barrier();
 
@@ -255,15 +255,15 @@ DWORD WINAPI memop(paramT *p)
       }
       switch (p->useoptasm) {
       case 0:
-        DEBUGOUT printf("mx %d: t1 %d, t2 %d, t4 %d, t8 %d  \n ",mx,t1,t2,t4,t8);
+        DEBUGOUT printf("mx %d: t1 %f, t2 %f, t4 %f, t8 %f  \n ",mx,t1,t2,t4,t8);
         t1=t1<t2?t1:t2;t1=t1<t4?t1:t4;t1=t1<t8?t1:t8;
         break;
       case 1:
-        DEBUGOUT printf("mx %d: topt %d \n ",mx, topt);
+        DEBUGOUT printf("mx %d: topt %f \n ",mx, topt);
         t1=topt;
         break;
       case 2:
-        DEBUGOUT printf("mx %d: t1 %d, t2 %d, t4 %d, t8 %d, topt %d  \n ",mx,t1,t2,t4,t8,topt);
+        DEBUGOUT printf("mx %d: t1 %f, t2 %f, t4 %f, t8 %f, topt %f  \n ",mx,t1,t2,t4,t8,topt);
         t1=t1<t2?t1:t2;t1=t1<t4?t1:t4;t1=t1<t8?t1:t8;t1=t1<topt?t1:topt;
         break;
       }
@@ -273,7 +273,7 @@ DWORD WINAPI memop(paramT *p)
 
       DEBUGOUT {
         if (p->par_cid==0)
-          fprintf( stream, "p%3d %6d %6d %16d %16d %16d %8.2f\n",
+          fprintf( stream, "p%3d %6d %6d %16d %16d %8.2f %8.2f\n",
           p->npes,l,effiters,mx*8,nel,t,(float)nel / 1024 / (t / tic)); // KB / us
       }
 
@@ -468,16 +468,16 @@ void analyze_rep(paramT *p) {
 
   switch (p->mode) {
   case 0:
-    fprintf( stream, "Load sum   ");
+    fprintf( stream, "LoadSum\t");
     break;
   case 1:
-    fprintf( stream, "Const store");
+    fprintf( stream, "ConstStore\t");
     break;
   case 2:
-    fprintf( stream, "Load copy  ");
+    fprintf( stream, "LoadCopy\t");
     break;
   case 3:
-    fprintf( stream, "Copy store ");
+    fprintf( stream, "CopyStore\t");
     break;
   }
   outliers=0;
@@ -487,18 +487,18 @@ void analyze_rep(paramT *p) {
   else i=1;
   for (z=1;z<=maxcol;z++) {
     if (bandwith[0][0][i][0]<1024)
-      fprintf(stream,"%6.1f K",bandwith[0][0][i][0]/1024);
+      fprintf(stream,"%1.1fK\t",bandwith[0][0][i][0]/1024);
     else if (bandwith[0][0][i][0]<1024*1024)
-      fprintf(stream,"%6d K",(int) bandwith[0][0][i][0]/1024);
+      fprintf(stream,"%dK\t",(int) bandwith[0][0][i][0]/1024);
     else
-      fprintf(stream,"%6d M",(int) bandwith[0][0][i][0]/(1024*1024));
+      fprintf(stream,"%dM\t",(int) bandwith[0][0][i][0]/(1024*1024));
     if (chartrev) i--;
     else i++;
   }
   fprintf(stream,"\n");
 
-  for (j=1;j<=maxrow;j++)	{
-    fprintf(stream,"%8d   ",(int)bandwith[0][0][0][j]);
+  for (j=1;j<=maxrow;j++) {
+    fprintf(stream,"%3d\t",(int)bandwith[0][0][0][j]);
     z=maxcol;
     if (chartrev) i=maxcol;
     else i=1;
@@ -544,7 +544,7 @@ void analyze_rep(paramT *p) {
       }
       devmean += stddev;
       corrdevmean += corrstddev;
-      fprintf(stream,"%8.8f ",bwmax);
+      fprintf(stream,"%8.8f\t",bwmax);
       if (chartrev) i--;
       else i++;
     }
