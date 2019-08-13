@@ -18,6 +18,7 @@
 #include <unistd.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <sys/mman.h>
 
 #include "par.h"
 
@@ -110,12 +111,17 @@ DWORD WINAPI memop(paramT *p)
   /*printf("address %d size %d, iter %d, Process %d\n",p,p->mxsize, p->mxiters, p->par_cid);
   fflush(stdout);
   */
+  long long int memory_size = sizeof(double) * p->mxsize;
 #ifdef SHAREDMEM
   a=shared;
 #else
-  a=(double *)malloc(sizeof(double)*p->mxsize);
+  //a = (double *)malloc(sizeof(double)*p->mxsize);
+  a = (double *)mmap(NULL, memory_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+  fprintf(stdout, "a addr : %p\n", a);
 #endif
-  c=(double *)malloc(sizeof(double)*p->mxsize+8192);
+  //c = (double *)malloc(sizeof(double)*p->mxsize+8192);
+  c = (double *)mmap(NULL, memory_size+8192, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_POPULATE, -1, 0);
+  fprintf(stdout, "c addr : %p\n", c);
   t1=t2=t4=t8=topt=0;
 
   /* Dump Debug-Info in outputfile */
@@ -388,9 +394,9 @@ DWORD WINAPI memop(paramT *p)
 
 
 #ifndef SHAREDMEM
-  free( a );
+  munmap(a, memory_size);
 #endif
-  free( c );
+  munmap(c, memory_size + 8192);
   return 0;
 }
 
