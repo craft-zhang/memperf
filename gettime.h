@@ -1,6 +1,7 @@
 /*
     time measuring with gettimeofday
     normal resolution 1 usec
+    TODO: return float type
  */
 
 #include <sys/time.h>
