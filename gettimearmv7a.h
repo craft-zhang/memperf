@@ -24,7 +24,7 @@ extern inline uint32 rdtsc32(void) {
 
 extern inline void getclock(uint32 *hi, uint32 *lo)
 {
-  *hi = 0;
+  *hi = 0; // TODO:
   *lo = rdtsc32();
 }
 
@@ -32,11 +32,11 @@ extern inline void getclock(uint32 *hi, uint32 *lo)
 extern inline float subtract64(uint32 hi0, uint32 lo0, uint32 hi1, uint32 lo1 )
 {
   float lor, hir;
-  hir = (hi1 - hi0);
+  hir = (float)(hi1 - hi0); // TODO:
   if (lo0 < lo1) {
-    lor = (lo1 - lo0);
+    lor = ((float)(lo1 - lo0)) / 2000.f; // TODO: freq
   } else {
-    lor = ((float)(0xFFFFFFFF - (lo0 - lo1))) / 2000.f ;
+    lor = ((float)(0xFFFFFFFF - (lo0 - lo1))) / 2000.f; // TODO: freq
   }
-  return lor;
+  return lor; // TODO:
 }
