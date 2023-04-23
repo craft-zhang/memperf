@@ -18,7 +18,8 @@ gettimeus (uint32 *hi, uint32 *lo)
 }
 
 /* 64 bit subtract t1-t0 */
-int subtract64(uint32 hi0, uint32 lo0, uint32 hi1, uint32 lo1 )
+static int
+subtract64(uint32 hi0, uint32 lo0, uint32 hi1, uint32 lo1 )
 {
   uint32 hir, lor;
 

@@ -1,8 +1,12 @@
 .SUFFIXES:      .c .o .s
 
-#x86-Linux with gcc
-CC = gcc
-OPTIONS = -O3  -march=i686 -static -W -Wall -fomit-frame-pointer
+# riscv64-Linux with gcc
+CC = riscv64-unknown-linux-gnu-gcc
+OPTIONS = -O3  -march=rv64gcv -mabi=lp64d -static -W -Wall -fomit-frame-pointer -Wno-unused-but-set-variable
+
+# x86-Linux with gcc
+# CC = gcc
+# OPTIONS = -O3  -march=i686 -static -W -Wall -fomit-frame-pointer
 
 #x86-Linux with Portland Group Compiler
 #CC = pgcc
@@ -31,6 +35,9 @@ pentiumopt:	DEFINES = -DPENTIUMCOUNTER -DHWCOUNTER -DHAVEOPT
 pentiumopt:	OBJECTS = $(OBJECTS) cpy_p3opt.o
 pentiumopt:	cpy_p3opt.o $(PROGNAME)
 
+riscvopt:	DEFINES = -DHAVEOPT -DRISCV
+riscvopt:	OBJECTS += cpy_p3opt.o
+riscvopt:	cpy_p3opt.o $(PROGNAME)
 
 alpha:		DEFINES = -DALPHACOUNTER -DHWCOUNTER
 alpha:		OBJECTS = $(OBJECTS) rtclock.o
