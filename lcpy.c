@@ -551,16 +551,16 @@ void analyze_rep(paramT *p) {
 
 	switch (p->mode) {
 	case 0:
-		fprintf( stream, "Load sum   ");
+		fprintf( stream, "LoadSum   ");
 		break;
 	case 1:
-		fprintf( stream, "Const store");
+		fprintf( stream, "ConstStore");
 		break;
 	case 2:
-		fprintf( stream, "Load copy  ");
+		fprintf( stream, "LoadCopy  ");
 		break;
 	case 3:
-		fprintf( stream, "Copy store ");
+		fprintf( stream, "CopyStore ");
 		break;
 	}
 	outliers=0;
@@ -570,18 +570,18 @@ void analyze_rep(paramT *p) {
 	else i=1;
 	for (z=1;z<=maxcol;z++) {
 		if (bandwith[0][0][i][0]<1024)
-			fprintf(stream,"%6.1f K",bandwith[0][0][i][0]/1024);
+			fprintf(stream,"%6.1fK",bandwith[0][0][i][0]/1024);
 		else if (bandwith[0][0][i][0]<1024*1024)
-			fprintf(stream,"%6d K",(int) bandwith[0][0][i][0]/1024);
+			fprintf(stream,"%6dK",(int) bandwith[0][0][i][0]/1024);
 		else
-			fprintf(stream,"%6d M",(int) bandwith[0][0][i][0]/(1024*1024));
+			fprintf(stream,"%6dM",(int) bandwith[0][0][i][0]/(1024*1024));
 		if (chartrev) i--;
 		else i++;
 	}
 	fprintf(stream,"\n");
 
 	for (j=1;j<=maxrow;j++)	{
-		fprintf(stream,"%8d   ",(int)bandwith[0][0][0][j]);
+		fprintf(stream,"%d   ",(int)bandwith[0][0][0][j]);
 		z=maxcol;
 		if (chartrev) i=maxcol;
 		else i=1;
@@ -627,7 +627,7 @@ void analyze_rep(paramT *p) {
 			}
 			devmean += stddev;
 			corrdevmean += corrstddev;
-			fprintf(stream,"%8.2f",bwmax);
+			fprintf(stream,"%8.2f ",bwmax);
 			if (chartrev) i--;
 			else i++;
 		}
